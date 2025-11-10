@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>SafeEye AI - Live Alerts</title>
+  <script type="module">
+    // Import Firebase libraries
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getDatabase, ref, onChildAdded } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+    // ✅ Your Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBeTHH_Y2RvpXKaVMjOtftoysQA4CCsUbs",
+      authDomain: "safeeyeai.firebaseapp.com",
+      databaseURL: "https://safeeyeai-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "safeeyeai",
+      storageBucket: "safeeyeai.firebasestorage.app",
+      messagingSenderId: "713818657823",
+      appId: "1:713818657823:web:bc9b8c4350001b22a8712a",
+      measurementId: "G-2JPXTBY1RW"
+    };
+
+    // ✅ Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const alertsDiv = document.getElementById("alerts");
+
+    // ✅ Listen for new alerts in Firebase Realtime Database
+    const alertsRef = ref(db, "alerts");
+    onChildAdded(alertsRef, (snapshot) => {
+      const alert = snapshot.val();
+      const div = document.createElement("div");
+      div.classList.add("alert");
+
+      if (alert.type === "Fire/Smoke") div.classList.add("fire");
+      else if (alert.type === "Fight") div.classList.add("fight");
+
+      div.innerHTML = `
+        <strong>${alert.type}</strong><br>
+        Confidence: ${alert.confidence}<br>
+        Time: ${alert.timestamp}
+      `;
+      alertsDiv.prepend(div);
+    });
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f9fc;
+      padding: 30px;
+    }
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    .alert {
+      background: white;
+      padding: 15px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+    .fire {
+      border-left: 6px solid red;
+    }
+    .fight {
+      border-left: 6px solid orange;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔥 SafeEye AI - Live Alerts</h1>
+  <div id="alerts">Loading alerts...</div>
+</body>
+</html>
